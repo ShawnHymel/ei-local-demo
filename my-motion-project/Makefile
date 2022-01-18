@@ -8,9 +8,8 @@ BUILD_PATH = ./build
 
 # Location of main (can be C, but must use C++ compiler)
 APP_SRC = main.c
-APP_OBJ = main.o
 
-# Set search path (for header files)
+# Search path for header files
 CFLAGS += -Ilib/
 
 # C compiler flags
@@ -28,8 +27,8 @@ CXXFLAGS += -std=c++14				# Use C++14 standard
 LDFLAGS += -lm 						# Link to math.h
 LDFLAGS += -lstdc++					# Link to stdc++.h
 
-# Include source code for required libraries
-CSOURCES += $(wildcard lib/edge-impulse-sdk/CMSIS/DSP/Source/TransformFunctions/*.c) \
+# Include C source code for required libraries
+CSOURCES = 	$(wildcard lib/edge-impulse-sdk/CMSIS/DSP/Source/TransformFunctions/*.c) \
 			$(wildcard lib/edge-impulse-sdk/CMSIS/DSP/Source/CommonTables/*.c) \
 			$(wildcard lib/edge-impulse-sdk/CMSIS/DSP/Source/BasicMathFunctions/*.c) \
 			$(wildcard lib/edge-impulse-sdk/CMSIS/DSP/Source/ComplexMathFunctions/*.c) \
@@ -37,13 +36,15 @@ CSOURCES += $(wildcard lib/edge-impulse-sdk/CMSIS/DSP/Source/TransformFunctions/
 			$(wildcard lib/edge-impulse-sdk/CMSIS/DSP/Source/SupportFunctions/*.c) \
 			$(wildcard lib/edge-impulse-sdk/CMSIS/DSP/Source/MatrixFunctions/*.c) \
 			$(wildcard lib/edge-impulse-sdk/CMSIS/DSP/Source/StatisticsFunctions/*.c)
-CXXSOURCES += 	$(wildcard lib/tflite-model/*.cpp) \
+
+# Include C++ source code for required libraries
+CXXSOURCES = 	$(wildcard lib/tflite-model/*.cpp) \
 				$(wildcard lib/edge-impulse-sdk/dsp/kissfft/*.cpp) \
 				$(wildcard lib/edge-impulse-sdk/dsp/dct/*.cpp) \
 				$(wildcard lib/edge-impulse-sdk/dsp/memory.cpp) \
 				$(wildcard lib/edge-impulse-sdk/porting/posix/*.c*) \
 				$(wildcard lib/edge-impulse-sdk/porting/mingw32/*.c*)
-CCSOURCES +=
+CCSOURCES =
 
 # Use TensorFlow Lite for Microcontrollers (TFLM)
 CFLAGS += -DTF_LITE_DISABLE_X86_NEON=1
@@ -55,10 +56,11 @@ CCSOURCES +=	$(wildcard lib/edge-impulse-sdk/tensorflow/lite/kernels/*.cc) \
 				$(wildcard lib/edge-impulse-sdk/tensorflow/lite/micro/memory_planner/*.cc) \
 				$(wildcard lib/edge-impulse-sdk/tensorflow/lite/core/api/*.cc)
 
-# Generate names for the output object files
+# Generate names for the output object files (*.o)
 COBJECTS := $(patsubst %.c,%.o,$(CSOURCES))
 CXXOBJECTS := $(patsubst %.cpp,%.o,$(CXXSOURCES))
 CCOBJECTS := $(patsubst %.cc,%.o,$(CCSOURCES))
+APP_OBJ := $(addsuffix .o, $(basename $(APP_SRC)))
 
 # Default rule
 .PHONY: all
