@@ -22,7 +22,7 @@ int main() {
         printf("ERROR: The size of the input buffer is not correct.\r\n");
         printf("Expected %d items, but got %d\r\n", 
                 EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE, 
-                buf_len);
+                (int)buf_len);
         return 1;
     }
 
