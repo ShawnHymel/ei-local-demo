@@ -6,10 +6,9 @@ CXX = g++
 TARGET_NAME = my-motion
 BUILD_PATH = ./build
 
-# Location of main (based on language)
-CSOURCES = 					# C  %%%Not working1!!!
-CXXSOURCES = main.cpp		# C++
-CCSOURCES = 				# %%%%???
+# Location of main (can be C, but must use C++ compiler)
+APP_SRC = main.c
+APP_OBJ = main.o
 
 # Set search path (for header files)
 CFLAGS += -Ilib/
@@ -62,9 +61,10 @@ CXXOBJECTS := $(patsubst %.cpp,%.o,$(CXXSOURCES))
 CCOBJECTS := $(patsubst %.cc,%.o,$(CCSOURCES))
 
 # Default rule
+.PHONY: all
 all: $(TARGET_NAME)
 
-# Build dependencies
+# Compile library source code into object files
 $(COBJECTS) : %.o : %.c
 $(CXXOBJECTS) : %.o : %.cpp
 $(CCOBJECTS) : %.o : %.cc
@@ -75,11 +75,15 @@ $(CCOBJECTS) : %.o : %.cc
 %.o: %.cpp
 	$(CXX) $(CFLAGS) $(CXXFLAGS) -c $^ -o $@
 
-# Build target
+# Compile main application into object file
+$(APP_OBJ): $(APP_SRC)
+	$(CXX) $(CFLAGS) $(CXXFLAGS) -c $^ -o $@
+
+# Build target (must use C++ compiler)
 .PHONY: $(TARGET_NAME)
-$(TARGET_NAME): $(COBJECTS) $(CXXOBJECTS) $(CCOBJECTS)
+$(TARGET_NAME): $(APP_OBJ) $(COBJECTS) $(CXXOBJECTS) $(CCOBJECTS)
 	mkdir -p $(BUILD_PATH)
-	$(CXX) $(COBJECTS) $(CXXOBJECTS) $(CCOBJECTS) -o $(BUILD_PATH)/$(TARGET_NAME) $(LDFLAGS)
+	$(CXX) $(APP_OBJ) $(COBJECTS) $(CXXOBJECTS) $(CCOBJECTS) -o $(BUILD_PATH)/$(TARGET_NAME) $(LDFLAGS)
 
 # Remove compiled object files
 .PHONY: clean
